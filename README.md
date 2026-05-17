@@ -1,8 +1,8 @@
 # Calculus Simulator
 
-A modern, professional educational web application for solving **Integration** and **Differentiation** problems step-by-step with interactive graph visualization.
+Calculus Simulator is a clean and interactive web app that helps students solve Integration and Differentiation problems step-by-step. It includes graph visualization, beginner-friendly UI, and fast calculations to make learning calculus easier and more practical.
 
-Built for students who want to learn calculus visually.
+A modern, professional educational web application built for students who want to learn calculus visually.
 
 ## Tech Stack
 
@@ -25,7 +25,7 @@ calculus-simulator/
 ├── backend/           # Express.js REST API
 │   ├── config/        # MongoDB connection
 │   ├── controllers/   # Route handlers
-│   ├── middleware/     # Validation, error handling
+│   ├── middleware/    # Validation, error handling
 │   ├── models/        # Mongoose schemas
 │   ├── routes/        # Express routers
 │   └── utils/         # Math engine (Nerdamer wrapper)
@@ -42,7 +42,7 @@ calculus-simulator/
 ### 1. Clone the repository
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/kushalnagori05-collab/Calculus-Simulator.git
 cd calculus-simulator
 ```
 
