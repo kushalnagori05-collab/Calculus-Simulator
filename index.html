@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculus Simulator — Standalone</title>
+  <meta name="description" content="A modern simulator for solving Integration and Differentiation problems step-by-step with graph visualization.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- External Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.13/nerdamer.core.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.13/Algebra.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.13/Calculus.js"></script>
+
+  <style>
+    /* =========================================================================
+       CSS STYLES
+       ========================================================================= */
+    :root {
+      --background: #ffffff;
+      --foreground: #111827;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --section-bg: #f9fafb;
+      --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+      --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; height: 100%; }
+    body { background: var(--background); color: var(--foreground); font-family: var(--font-sans); line-height: 1.5; min-height: 100%; display: flex; flex-direction: column; -webkit-font-smoothing: antialiased; }
+    main { flex: 1; }
+    a { color: inherit; text-decoration: none; }
+    ul, ol { list-style: none; }
+    button { cursor: pointer; border: none; background: none; font-family: inherit; }
+    input, select { font-family: inherit; }
+
+    /* Animations */
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    .animate-fade-in-up { animation: fadeInUp 0.5s ease-out forwards; }
+    .delay-100 { animation-delay: 0.1s; } .delay-200 { animation-delay: 0.2s; } .delay-300 { animation-delay: 0.3s; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
+    .animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+
+    /* Utilities */
+    .max-w-6xl { max-width: 72rem; margin: 0 auto; padding: 0 1rem; }
+    .max-w-4xl { max-width: 56rem; margin: 0 auto; padding: 0 1rem; }
+    .text-center { text-align: center; } .text-muted { color: var(--muted); } .text-accent { color: var(--accent); }
+    .font-mono { font-family: var(--font-mono); } .font-semibold { font-weight: 600; } .font-bold { font-weight: 700; }
+    .bg-section-bg { background-color: var(--section-bg); }
+    .flex { display: flex; } .items-center { align-items: center; } .justify-between { justify-content: space-between; }
+    .gap-2 { gap: 0.5rem; } .gap-4 { gap: 1rem; } .gap-8 { gap: 2rem; }
+    .py-10 { padding-top: 2.5rem; padding-bottom: 2.5rem; } .py-20 { padding-top: 5rem; padding-bottom: 5rem; }
+    .mb-2 { margin-bottom: 0.5rem; } .mb-4 { margin-bottom: 1rem; } .mb-8 { margin-bottom: 2rem; } .mb-12 { margin-bottom: 3rem; } .mt-4 { margin-top: 1rem; }
+    
+    /* Layout */
+    .solver-layout { display: grid; grid-template-columns: 1fr; gap: 2rem; }
+    @media (min-width: 1024px) { .solver-layout { grid-template-columns: 2fr 1fr; } .history-sidebar { display: block; } }
+    .history-sidebar { display: none; }
+
+    /* Elements */
+    .card { border-radius: 1rem; border: 1px solid var(--border); background: #fff; padding: 1.5rem; box-shadow: var(--card-shadow); margin-bottom: 1.5rem; }
+    .input-group { margin-bottom: 1.25rem; }
+    .input-label { display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.375rem; }
+    .text-input { width: 100%; padding: 0.75rem 1rem; border-radius: 0.75rem; border: 1px solid var(--border); font-family: var(--font-mono); font-size: 0.875rem; outline: none; transition: all 0.2s; }
+    .text-input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3); }
+    .select-input { padding: 0.625rem 0.75rem; border-radius: 0.5rem; border: 1px solid var(--border); font-size: 0.875rem; background: #fff; outline: none; }
+    .select-input:focus { border-color: var(--accent); }
+    .btn-primary { padding: 0.625rem 1.5rem; border-radius: 0.75rem; background: var(--accent); color: #fff; font-size: 0.875rem; font-weight: 500; transition: all 0.2s; }
+    .btn-primary:hover:not(:disabled) { background: var(--accent-hover); } .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-secondary { padding: 0.625rem 1.5rem; border-radius: 0.75rem; background: var(--section-bg); color: var(--muted); font-size: 0.875rem; font-weight: 500; transition: all 0.2s; }
+    .btn-secondary:hover { background: #f3f4f6; color: var(--foreground); }
+    
+    .quick-examples { display: flex; flex-wrap: wrap; gap: 0.375rem; align-items: center; margin-top: 0.5rem; }
+    .quick-example-btn { padding: 0.125rem 0.5rem; border-radius: 0.375rem; background: var(--section-bg); font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted); }
+    .quick-example-btn:hover { color: var(--accent); background: rgba(37, 99, 235, 0.05); }
+
+    .toggle-group { display: flex; gap: 0.5rem; }
+    .toggle-btn { padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 500; text-transform: capitalize; background: var(--section-bg); color: var(--muted); }
+    .toggle-btn.active { background: var(--accent); color: #fff; }
+
+    .order-btn { width: 2.5rem; height: 2.5rem; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 600; background: var(--section-bg); color: var(--muted); }
+    .order-btn.active { background: var(--accent); color: #fff; }
+
+    .steps-list { display: flex; flex-direction: column; gap: 0.75rem; }
+    .step-item { display: flex; gap: 0.75rem; font-size: 0.875rem; }
+    .step-number { flex-shrink: 0; width: 1.5rem; height: 1.5rem; border-radius: 50%; background: rgba(37, 99, 235, 0.1); color: var(--accent); font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-top: 0.125rem; }
+    .step-content { font-family: var(--font-mono); line-height: 1.6; color: rgba(17, 24, 39, 0.9); word-break: break-all; }
+
+    .graph-container { width: 100%; height: 18rem; position: relative; }
+    
+    .history-list { display: flex; flex-direction: column; gap: 0.75rem; max-height: 24rem; overflow-y: auto; }
+    .history-item { padding: 0.75rem; border-radius: 0.5rem; background: var(--section-bg); font-size: 0.875rem; }
+    .history-item-top { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem; }
+    .history-badge { padding: 0.125rem 0.5rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; }
+    .history-badge.integration { background: #eff6ff; color: var(--accent); }
+    .history-badge.differentiation { background: #ecfdf5; color: #059669; }
+    .history-expression { font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .history-result { font-family: var(--font-mono); font-size: 0.75rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .error-msg { padding: 1rem; border-radius: 0.75rem; background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; font-size: 0.875rem; margin-bottom: 1.5rem; }
+
+    /* Navbar */
+    .navbar { position: sticky; top: 0; z-index: 50; background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); }
+    .nav-container { max-width: 72rem; margin: 0 auto; padding: 0 1rem; display: flex; align-items: center; justify-content: space-between; height: 4rem; }
+    .nav-logo { display: flex; align-items: center; gap: 0.5rem; font-weight: 600; font-size: 1.125rem; }
+    .nav-links { display: flex; gap: 0.25rem; }
+    .nav-links a { padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 500; color: var(--muted); }
+    .nav-links a.active { color: var(--accent); background: rgba(37, 99, 235, 0.1); }
+    .mobile-menu-btn { display: none; padding: 0.5rem; border-radius: 0.5rem; }
+    .mobile-menu { display: none; border-top: 1px solid var(--border); background: #fff; padding: 0.5rem 1rem 1rem; }
+    .mobile-menu.open { display: flex; flex-direction: column; gap: 0.25rem; }
+    .mobile-menu a { padding: 0.625rem 1rem; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 500; color: var(--muted); }
+    .mobile-menu a.active { color: var(--accent); background: rgba(37, 99, 235, 0.1); }
+    @media (max-width: 768px) { .nav-links { display: none; } .mobile-menu-btn { display: block; } }
+
+    /* Footer */
+    .footer { background: var(--section-bg); border-top: 1px solid var(--border); margin-top: 5rem; }
+    .footer-container { max-width: 72rem; margin: 0 auto; padding: 2.5rem 1rem; }
+    .footer-grid { display: grid; grid-template-columns: repeat(1, 1fr); gap: 2rem; }
+    @media (min-width: 640px) { .footer-grid { grid-template-columns: repeat(3, 1fr); } }
+    .footer h4 { font-size: 0.875rem; font-weight: 600; margin-bottom: 0.75rem; }
+    .footer ul { display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.875rem; color: var(--muted); }
+
+    /* SPA Views */
+    .page-view { display: none; animation: fadeInUp 0.3s ease-out forwards; }
+    .page-view.active { display: block; }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR INJECTED HERE BY JS -->
+
+  <main>
+    <!-- ============================================== -->
+    <!-- VIEW: HOME -->
+    <!-- ============================================== -->
+    <div id="view-home" class="page-view active">
+      <section class="py-20" style="position: relative; overflow: hidden;">
+        <div style="position: absolute; inset: 0; background: radial-gradient(#e5e7eb 1px, transparent 1px) 0 0 / 20px 20px; opacity: 0.5;"></div>
+        <div class="max-w-4xl text-center" style="position: relative; padding-top: 5rem; padding-bottom: 5rem;">
+          <div class="animate-fade-in-up" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0.75rem; border-radius: 9999px; background: rgba(37, 99, 235, 0.1); color: var(--accent); font-size: 0.875rem; font-weight: 500; margin-bottom: 1.5rem;">
+            <span>📐</span> Offline HTML File
+          </div>
+          <h1 class="animate-fade-in-up delay-100 font-bold" style="font-size: clamp(2.25rem, 5vw, 3.75rem); line-height: 1.1; letter-spacing: -0.025em; margin-bottom: 1.5rem;">
+            Learn Calculus <span class="text-accent">Visually</span> and <span class="text-accent">Easily</span>
+          </h1>
+          <p class="animate-fade-in-up delay-200 text-muted" style="font-size: 1.125rem; max-width: 42rem; margin: 0 auto 2.5rem; line-height: 1.6;">
+            A completely standalone simulator for solving Integration and Differentiation problems. No backend server required!
+          </p>
+          <div class="animate-fade-in-up delay-300 flex gap-4 justify-center items-center">
+            <a href="#integration" class="btn-primary" style="width: 16rem; text-align: center;">Start Integration →</a>
+            <a href="#differentiation" class="btn-secondary" style="width: 16rem; text-align: center; border: 1px solid var(--border); background: #fff;">Start Differentiation →</a>
+          </div>
+        </div>
+      </section>
+      
+      <section class="py-20 bg-section-bg">
+        <div class="max-w-6xl">
+          <div class="text-center mb-12">
+            <h2 class="font-bold" style="font-size: 1.875rem;">Powerful Features</h2>
+            <p class="text-muted mt-4">Everything you need to master calculus concepts.</p>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+            <div class="card mb-0">
+              <div style="width:3rem;height:3rem;border-radius:0.75rem;background:rgba(37,99,235,0.1);color:var(--accent);font-size:1.5rem;display:flex;align-items:center;justify-content:center;margin-bottom:1rem;">📝</div>
+              <h3 class="font-semibold mb-2">Step-by-Step Solutions</h3>
+              <p class="text-muted" style="font-size: 0.875rem;">See every rule and transformation applied to your equation, making it easy to understand the process.</p>
+            </div>
+            <div class="card mb-0">
+              <div style="width:3rem;height:3rem;border-radius:0.75rem;background:rgba(37,99,235,0.1);color:var(--accent);font-size:1.5rem;display:flex;align-items:center;justify-content:center;margin-bottom:1rem;">📊</div>
+              <h3 class="font-semibold mb-2">Graph Visualization</h3>
+              <p class="text-muted" style="font-size: 0.875rem;">Visualize your functions and their integrals or derivatives on interactive charts.</p>
+            </div>
+            <div class="card mb-0">
+              <div style="width:3rem;height:3rem;border-radius:0.75rem;background:rgba(37,99,235,0.1);color:var(--accent);font-size:1.5rem;display:flex;align-items:center;justify-content:center;margin-bottom:1rem;">⚡</div>
+              <h3 class="font-semibold mb-2">Local Calculation</h3>
+              <p class="text-muted" style="font-size: 0.875rem;">Powered by a symbolic math engine running entirely in your browser for instant results.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- VIEW: INTEGRATION -->
+    <!-- ============================================== -->
+    <div id="view-integration" class="page-view">
+      <div class="py-10 max-w-6xl">
+        <div class="mb-8">
+          <h1 class="font-bold" style="font-size: 1.875rem;">Integration Solver</h1>
+          <p class="text-muted mt-4">Compute indefinite and definite integrals with step-by-step solutions.</p>
+        </div>
+        <div class="solver-layout">
+          <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+            <form id="integration-form" class="card">
+              <div class="input-group">
+                <label for="integration-expression" class="input-label">Enter your expression</label>
+                <input type="text" id="integration-expression" class="text-input" placeholder="e.g. x^2 + 3*x" autocomplete="off" spellcheck="false">
+                <div class="quick-examples">
+                  <span class="text-muted" style="font-size: 0.75rem;">Try:</span>
+                  <button type="button" class="quick-example-btn integration-example-btn" data-expr="x^2"></button>
+                  <button type="button" class="quick-example-btn integration-example-btn" data-expr="sin(x)"></button>
+                  <button type="button" class="quick-example-btn integration-example-btn" data-expr="e^x"></button>
+                  <button type="button" class="quick-example-btn integration-example-btn" data-expr="x^3 + 2*x"></button>
+                  <button type="button" class="quick-example-btn integration-example-btn" data-expr="cos(x) + x^2"></button>
+                </div>
+              </div>
+              <div class="input-group">
+                <label class="input-label">Integration Type</label>
+                <div class="toggle-group">
+                  <button type="button" class="toggle-btn active mode-btn" data-mode="indefinite">Indefinite</button>
+                  <button type="button" class="toggle-btn mode-btn" data-mode="definite">Definite</button>
+                </div>
+              </div>
+              <div class="input-group flex gap-4">
+                <div>
+                  <label for="integration-variable" class="input-label">Variable</label>
+                  <select id="integration-variable" class="select-input">
+                    <option value="x">x</option><option value="y">y</option><option value="t">t</option><option value="z">z</option><option value="u">u</option>
+                  </select>
+                </div>
+                <div id="limits-container" style="display: none; gap: 1rem;">
+                  <div>
+                    <label for="lower" class="input-label">Lower Limit</label>
+                    <input type="text" id="lower" class="text-input font-mono" style="width: 5rem;" placeholder="0">
+                  </div>
+                  <div>
+                    <label for="upper" class="input-label">Upper Limit</label>
+                    <input type="text" id="upper" class="text-input font-mono" style="width: 5rem;" placeholder="1">
+                  </div>
+                </div>
+              </div>
+              <div class="flex gap-4 mt-4">
+                <button type="submit" id="integration-submit-btn" class="btn-primary" disabled>Solve</button>
+                <button type="button" id="integration-clear-btn" class="btn-secondary">Clear</button>
+              </div>
+            </form>
+
+            <div id="integration-error-container" class="error-msg" style="display: none;"></div>
+
+            <div id="integration-result-container" class="card" style="display: none;">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="font-semibold" style="font-size: 1.125rem;">Result</h3>
+                <button id="integration-copy-btn" class="quick-example-btn" style="padding: 0.25rem 0.75rem;">Copy</button>
+              </div>
+              <p class="font-mono text-accent font-semibold" style="font-size: 1.25rem; word-break: break-all;" id="integration-result-html"></p>
+              <p id="integration-approx-html" class="font-mono text-muted mt-4" style="font-size: 0.875rem; display: none;"></p>
+            </div>
+
+            <div id="integration-steps-container" class="card" style="display: none;">
+              <h3 class="font-semibold flex items-center gap-2 mb-4">Step-by-Step Solution</h3>
+              <ol id="integration-steps-list" class="steps-list"></ol>
+            </div>
+
+            <div id="integration-graph-container" class="card" style="display: none;">
+              <h3 class="font-semibold flex items-center gap-2 mb-4">Graph Visualization</h3>
+              <div class="graph-container">
+                <canvas id="integration-graph-canvas"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="history-sidebar">
+            <div class="card">
+              <h3 class="font-semibold mb-4">Recent Calculations</h3>
+              <div id="integration-history-container"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- VIEW: DIFFERENTIATION -->
+    <!-- ============================================== -->
+    <div id="view-differentiation" class="page-view">
+      <div class="py-10 max-w-6xl">
+        <div class="mb-8">
+          <h1 class="font-bold" style="font-size: 1.875rem;">Differentiation Solver</h1>
+          <p class="text-muted mt-4">Compute derivatives of any order with step-by-step explanations and graphs.</p>
+        </div>
+        <div class="solver-layout">
+          <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+            <form id="differentiation-form" class="card">
+              <div class="input-group">
+                <label for="differentiation-expression" class="input-label">Enter your function</label>
+                <input type="text" id="differentiation-expression" class="text-input" placeholder="e.g. x^3 + 2*x" autocomplete="off" spellcheck="false">
+                <div class="quick-examples">
+                  <span class="text-muted" style="font-size: 0.75rem;">Try:</span>
+                  <button type="button" class="quick-example-btn diff-example-btn" data-expr="x^3"></button>
+                  <button type="button" class="quick-example-btn diff-example-btn" data-expr="sin(x)"></button>
+                  <button type="button" class="quick-example-btn diff-example-btn" data-expr="e^x"></button>
+                  <button type="button" class="quick-example-btn diff-example-btn" data-expr="x^3 + 2*x"></button>
+                  <button type="button" class="quick-example-btn diff-example-btn" data-expr="ln(x)"></button>
+                </div>
+              </div>
+              <div class="input-group flex gap-8">
+                <div>
+                  <label for="differentiation-variable" class="input-label">Variable</label>
+                  <select id="differentiation-variable" class="select-input">
+                    <option value="x">x</option><option value="y">y</option><option value="t">t</option><option value="z">z</option><option value="u">u</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="input-label">Derivative Order</label>
+                  <div class="toggle-group">
+                    <button type="button" class="order-btn active" data-order="1">1</button>
+                    <button type="button" class="order-btn" data-order="2">2</button>
+                    <button type="button" class="order-btn" data-order="3">3</button>
+                    <button type="button" class="order-btn" data-order="4">4</button>
+                    <button type="button" class="order-btn" data-order="5">5</button>
+                  </div>
+                </div>
+              </div>
+              <div class="flex gap-4 mt-4">
+                <button type="submit" id="differentiation-submit-btn" class="btn-primary" disabled>Solve</button>
+                <button type="button" id="differentiation-clear-btn" class="btn-secondary">Clear</button>
+              </div>
+            </form>
+
+            <div id="differentiation-error-container" class="error-msg" style="display: none;"></div>
+
+            <div id="differentiation-result-container" class="card" style="display: none;">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="font-semibold" style="font-size: 1.125rem;">Result</h3>
+                <button id="differentiation-copy-btn" class="quick-example-btn" style="padding: 0.25rem 0.75rem;">Copy</button>
+              </div>
+              <p class="font-mono text-accent font-semibold" style="font-size: 1.25rem; word-break: break-all;" id="differentiation-result-html"></p>
+            </div>
+
+            <div id="differentiation-steps-container" class="card" style="display: none;">
+              <h3 class="font-semibold flex items-center gap-2 mb-4">Step-by-Step Solution</h3>
+              <ol id="differentiation-steps-list" class="steps-list"></ol>
+            </div>
+
+            <div id="differentiation-graph-container" class="card" style="display: none;">
+              <h3 class="font-semibold flex items-center gap-2 mb-4">Graph Visualization</h3>
+              <div class="graph-container">
+                <canvas id="differentiation-graph-canvas"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="history-sidebar">
+            <div class="card">
+              <h3 class="font-semibold mb-4">Recent Calculations</h3>
+              <div id="differentiation-history-container"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- VIEW: ABOUT -->
+    <!-- ============================================== -->
+    <div id="view-about" class="page-view">
+      <div class="py-10 max-w-4xl">
+        <h1 class="font-bold mb-4" style="font-size: 1.875rem;">About Calculus Simulator</h1>
+        <p class="text-muted mb-12" style="font-size: 1.125rem; line-height: 1.7;">
+          Calculus Simulator is a free, educational offline tool designed to help students learn and practice integration and differentiation. Enter any expression, get step-by-step solutions, and visualize the results on interactive graphs.
+        </p>
+        <section class="mb-12">
+          <h2 class="font-semibold mb-6" style="font-size: 1.5rem;">How to Use</h2>
+          <ol class="steps-list" style="color: rgba(17,24,39,0.9); font-size: 1rem;">
+            <li class="step-item" style="align-items: flex-start;"><span class="step-number" style="background: var(--accent); color: #fff;">1</span><span>Navigate to <strong>Integration</strong> or <strong>Differentiation</strong>.</span></li>
+            <li class="step-item" style="align-items: flex-start;"><span class="step-number" style="background: var(--accent); color: #fff;">2</span><span>Type a math expression using standard notation: <code class="font-mono">x^2</code>, <code class="font-mono">sin(x)</code>.</span></li>
+            <li class="step-item" style="align-items: flex-start;"><span class="step-number" style="background: var(--accent); color: #fff;">3</span><span>Click <strong>Solve</strong>.</span></li>
+          </ol>
+        </section>
+        <section>
+          <h2 class="font-semibold mb-6" style="font-size: 1.5rem;">Technologies Used</h2>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+            <div class="card mb-0">
+              <h3 class="font-semibold" style="font-size: 0.875rem;">Single HTML File</h3>
+              <p class="text-muted mt-1" style="font-size: 0.75rem;">Runs entirely offline, no server needed.</p>
+            </div>
+            <div class="card mb-0">
+              <h3 class="font-semibold" style="font-size: 0.875rem;">Nerdamer</h3>
+              <p class="text-muted mt-1" style="font-size: 0.75rem;">Symbolic math engine.</p>
+            </div>
+            <div class="card mb-0">
+              <h3 class="font-semibold" style="font-size: 0.875rem;">Chart.js</h3>
+              <p class="text-muted mt-1" style="font-size: 0.75rem;">Graph visualization library.</p>
+            </div>
+            <div class="card mb-0">
+              <h3 class="font-semibold" style="font-size: 0.875rem;">Local Storage</h3>
+              <p class="text-muted mt-1" style="font-size: 0.75rem;">Database for calculation history.</p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    /* =========================================================================
+       COMMON UTILITIES (common.js)
+       ========================================================================= */
+    const NAV_LINKS = [
+      { href: "#home", label: "Home" },
+      { href: "#integration", label: "Integration" },
+      { href: "#differentiation", label: "Differentiation" },
+      { href: "#about", label: "About" },
+    ];
+
+    function escapeHtml(str) { return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+    function formatMath(text) {
+      if (!text) return "";
+      let html = escapeHtml(String(text));
+      html = html.replace(/([\w)])\^\(([^)]+)\)/g, "$1<sup>$2</sup>");
+      html = html.replace(/([\w)])\^(\d{2,})/g, "$1<sup>$2</sup>");
+      html = html.replace(/([\w)])\^(\d)/g, "$1<sup>$2</sup>");
+      html = html.replace(/sqrt\(/g, "√(");
+      html = html.replace(/\bpi\b/g, "π");
+      html = html.replace(/\bInfinity\b/gi, "∞");
+      html = html.replace(/(\d)\*([a-zA-Z(])/g, "$1$2");
+      html = html.replace(/\)\*([a-zA-Z(])/g, ")$1");
+      html = html.replace(/\*/g, "·");
+      return html;
+    }
+
+    function renderNavbar() {
+      const currentHash = window.location.hash || "#home";
+      const navHTML = `
+        <header class="navbar">
+          <div class="nav-container">
+            <a href="#home" class="nav-logo">
+              <span style="font-size: 1.5rem;">∫</span>
+              <span>Calculus <span class="text-accent">Simulator</span></span>
+            </a>
+            <nav class="nav-links">
+              ${NAV_LINKS.map(link => `<a href="${link.href}" class="${currentHash === link.href ? 'active' : ''}">${link.label}</a>`).join('')}
+            </nav>
+            <button id="mobile-menu-btn" class="mobile-menu-btn">Menu</button>
+          </div>
+          <nav id="mobile-menu" class="mobile-menu">
+            ${NAV_LINKS.map(link => `<a href="${link.href}" class="${currentHash === link.href ? 'active' : ''}">${link.label}</a>`).join('')}
+          </nav>
+        </header>
+      `;
+      document.body.insertAdjacentHTML('afterbegin', navHTML);
+      const mobileBtn = document.getElementById('mobile-menu-btn');
+      const mobileMenu = document.getElementById('mobile-menu');
+      if (mobileBtn && mobileMenu) {
+        mobileBtn.addEventListener('click', () => mobileMenu.classList.toggle('open'));
+        mobileMenu.querySelectorAll('a').forEach(l => l.addEventListener('click', () => mobileMenu.classList.remove('open')));
+      }
+    }
+
+    function handleRoute() {
+      const hash = window.location.hash || '#home';
+      document.querySelectorAll('.page-view').forEach(v => v.classList.remove('active'));
+      const targetView = document.getElementById('view-' + hash.substring(1));
+      if (targetView) targetView.classList.add('active');
+      else document.getElementById('view-home').classList.add('active');
+      
+      document.querySelectorAll('.nav-links a, .mobile-menu a').forEach(link => {
+        if (link.getAttribute('href') === hash) link.classList.add('active');
+        else link.classList.remove('active');
+      });
+
+      if (hash === '#integration' || hash === '#differentiation') {
+        loadHistory(hash.substring(1));
+      }
+      window.scrollTo(0, 0);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderNavbar();
+      handleRoute();
+    });
+    window.addEventListener('hashchange', handleRoute);
+
+    /* =========================================================================
+       LOCAL STORAGE HISTORY (history.js)
+       ========================================================================= */
+    const HISTORY_KEY = 'calculus_history';
+    
+    function saveHistory(type, expression, result) {
+      let history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+      history.unshift({ type, expression, result, id: Date.now() });
+      if (history.length > 20) history = history.slice(0, 20); // Keep last 20
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+    }
+
+    function getHistory() {
+      return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+    }
+
+    function loadHistory(page) {
+      const containerId = page ? `${page}-history-container` : 'integration-history-container';
+      const container = document.getElementById(containerId);
+      if (!container) return;
+
+      const data = getHistory();
+      if (!data || data.length === 0) {
+        container.innerHTML = `<p class="text-muted" style="font-size:0.875rem;">No calculations yet. Try solving an equation!</p>`;
+        return;
+      }
+
+      const historyHtml = `
+        <ul class="history-list">
+          ${data.map(item => `
+            <li class="history-item">
+              <div class="history-item-top">
+                <span class="history-badge ${item.type}">
+                  ${item.type === 'integration' ? '∫' : 'd/dx'}
+                </span>
+                <span class="history-expression">${formatMath(item.expression)}</span>
+              </div>
+              <div class="history-result">= ${formatMath(item.result)}</div>
+            </li>
+          `).join('')}
+        </ul>
+      `;
+      container.innerHTML = historyHtml;
+    }
+
+    /* =========================================================================
+       MATH ENGINE (mathEngine.js logic moved to frontend)
+       ========================================================================= */
+    function generateGraphData(originalExpr, resultExpr, variable, isIntegration) {
+      const data = [];
+      try {
+        const origFunc = nerdamer(originalExpr).buildFunction([variable]);
+        let resFunc = null;
+        if (!isIntegration || (isIntegration && !resultExpr.includes('C'))) {
+          resFunc = nerdamer(resultExpr).buildFunction([variable]);
+        } else if (isIntegration && resultExpr.includes('+ C')) {
+          resFunc = nerdamer(resultExpr.replace('+ C', '+ 0')).buildFunction([variable]);
+        }
+
+        for (let x = -10; x <= 10; x += 0.5) {
+          let origVal = null, resVal = null;
+          try { origVal = origFunc(x); if (!isFinite(origVal)) origVal = null; } catch (e) {}
+          try { if (resFunc) { resVal = resFunc(x); if (!isFinite(resVal)) resVal = null; } } catch (e) {}
+          data.push({ x: Number(x.toFixed(1)), original: origVal, result: resVal });
+        }
+      } catch (err) {
+        console.warn('Graph generation failed', err);
+      }
+      return data;
+    }
+
+    function solveIntegration(expression, variable, mode, lower, upper) {
+      try {
+        const steps = [];
+        steps.push(`Original: ∫(${expression}) d${variable}`);
+        
+        const expanded = nerdamer(`expand(${expression})`).toString();
+        if (expanded !== expression) steps.push(`Expand: ∫(${expanded}) d${variable}`);
+
+        if (mode === 'indefinite') {
+          const result = nerdamer(`integrate(${expression}, ${variable})`).toString() + " + C";
+          steps.push(`Integrate: ${result}`);
+          return { success: true, data: { result, steps, graphData: generateGraphData(expression, result, variable, true) } };
+        } else {
+          // Definite
+          const indefinite = nerdamer(`integrate(${expression}, ${variable})`).toString();
+          steps.push(`Indefinite Integral: ${indefinite}`);
+          const upperSub = nerdamer(indefinite, { [variable]: upper }).toString();
+          const lowerSub = nerdamer(indefinite, { [variable]: lower }).toString();
+          steps.push(`F(${upper}) = ${upperSub}`);
+          steps.push(`F(${lower}) = ${lowerSub}`);
+          steps.push(`F(${upper}) - F(${lower})`);
+          
+          const resultExpr = `defint(${expression}, ${lower}, ${upper}, ${variable})`;
+          const exactResult = nerdamer(resultExpr).toString();
+          steps.push(`Exact Result: ${exactResult}`);
+          
+          const numericalResult = nerdamer(exactResult).evaluate().text('decimals');
+          return { success: true, data: { result: exactResult, numericalResult, steps, graphData: generateGraphData(expression, indefinite, variable, true) } };
+        }
+      } catch (err) {
+        return { success: false, error: err.message || 'Failed to compute integral.' };
+      }
+    }
+
+    function solveDifferentiation(expression, variable, order) {
+      try {
+        const steps = [];
+        let currentExpr = expression;
+        steps.push(`Original: ${currentExpr}`);
+
+        for (let i = 1; i <= order; i++) {
+          const expanded = nerdamer(`expand(${currentExpr})`).toString();
+          if (expanded !== currentExpr && i === 1) steps.push(`Expand: ${expanded}`);
+          
+          currentExpr = nerdamer(`diff(${currentExpr}, ${variable}, 1)`).toString();
+          steps.push(`Derivative ${i}: ${currentExpr}`);
+        }
+
+        return { success: true, data: { result: currentExpr, steps, graphData: generateGraphData(expression, currentExpr, variable, false) } };
+      } catch (err) {
+        return { success: false, error: err.message || 'Failed to compute derivative.' };
+      }
+    }
+
+    /* =========================================================================
+       INTEGRATION UI (integration.js)
+       ========================================================================= */
+    document.addEventListener('DOMContentLoaded', () => {
+      const intForm = document.getElementById('integration-form');
+      const intExpr = document.getElementById('integration-expression');
+      const intVar = document.getElementById('integration-variable');
+      const intModes = document.querySelectorAll('.mode-btn');
+      const intLimits = document.getElementById('limits-container');
+      const intLower = document.getElementById('lower');
+      const intUpper = document.getElementById('upper');
+      const intClear = document.getElementById('integration-clear-btn');
+      const intSubmit = document.getElementById('integration-submit-btn');
+      
+      let currentMode = 'indefinite';
+      let intChart = null;
+      let rawIntResult = '';
+
+      intModes.forEach(btn => {
+        btn.addEventListener('click', () => {
+          intModes.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          currentMode = btn.dataset.mode;
+          intLimits.style.display = currentMode === 'definite' ? 'flex' : 'none';
+        });
+      });
+
+      document.querySelectorAll('.integration-example-btn').forEach(btn => {
+        btn.innerHTML = formatMath(btn.dataset.expr);
+        btn.addEventListener('click', () => { intExpr.value = btn.dataset.expr; intSubmit.disabled = false; });
+      });
+
+      intClear.addEventListener('click', () => {
+        intExpr.value = ''; intLower.value = ''; intUpper.value = '';
+        document.getElementById('integration-error-container').style.display = 'none';
+        document.getElementById('integration-result-container').style.display = 'none';
+        document.getElementById('integration-steps-container').style.display = 'none';
+        document.getElementById('integration-graph-container').style.display = 'none';
+        intSubmit.disabled = true;
+        if (intChart) intChart.destroy();
+      });
+
+      intExpr.addEventListener('input', () => intSubmit.disabled = intExpr.value.trim().length === 0);
+
+      document.getElementById('integration-copy-btn').addEventListener('click', async (e) => {
+        if (!rawIntResult) return;
+        try {
+          await navigator.clipboard.writeText(rawIntResult);
+          e.target.innerText = '✓ Copied';
+          setTimeout(() => e.target.innerText = 'Copy', 2000);
+        } catch (err) {}
+      });
+
+      intForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (!intExpr.value.trim()) return;
+
+        intSubmit.disabled = true; intSubmit.innerText = 'Solving...';
+        document.getElementById('integration-error-container').style.display = 'none';
+        document.getElementById('integration-result-container').style.display = 'none';
+        document.getElementById('integration-steps-container').style.display = 'none';
+        document.getElementById('integration-graph-container').style.display = 'none';
+
+        // Call local math engine
+        setTimeout(() => {
+          const res = solveIntegration(intExpr.value, intVar.value, currentMode, intLower.value, intUpper.value);
+          
+          intSubmit.disabled = false; intSubmit.innerText = 'Solve';
+
+          if (!res.success) {
+            const errDiv = document.getElementById('integration-error-container');
+            errDiv.innerText = res.error; errDiv.style.display = 'block';
+            return;
+          }
+
+          const data = res.data;
+          rawIntResult = data.result;
+          document.getElementById('integration-result-html').innerHTML = formatMath(data.result);
+          
+          if (data.numericalResult) {
+            document.getElementById('integration-approx-html').innerHTML = '≈ ' + formatMath(data.numericalResult);
+            document.getElementById('integration-approx-html').style.display = 'block';
+          } else {
+            document.getElementById('integration-approx-html').style.display = 'none';
+          }
+          document.getElementById('integration-result-container').style.display = 'block';
+
+          if (data.steps && data.steps.length > 0) {
+            document.getElementById('integration-steps-list').innerHTML = data.steps.map((step, i) => `<li class="step-item"><div class="step-number">${i + 1}</div><div class="step-content">${formatMath(step)}</div></li>`).join('');
+            document.getElementById('integration-steps-container').style.display = 'block';
+          }
+
+          if (data.graphData && data.graphData.length > 0) {
+            if (intChart) intChart.destroy();
+            const canvas = document.getElementById('integration-graph-canvas');
+            intChart = new Chart(canvas, {
+              type: 'line',
+              data: {
+                labels: data.graphData.map(d => d.x),
+                datasets: [
+                  { label: 'f(x)', data: data.graphData.map(d => d.original), borderColor: '#2563eb', borderWidth: 2, pointRadius: 0, tension: 0.1, spanGaps: true },
+                  { label: '∫f(x)dx', data: data.graphData.map(d => d.result), borderColor: '#10b981', borderWidth: 2, pointRadius: 0, tension: 0.1, spanGaps: true }
+                ]
+              },
+              options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false } }
+            });
+            document.getElementById('integration-graph-container').style.display = 'block';
+          }
+
+          saveHistory('integration', intExpr.value, data.result);
+          loadHistory('integration');
+        }, 100); // slight delay for UI update
+      });
+    });
+
+    /* =========================================================================
+       DIFFERENTIATION UI (differentiation.js)
+       ========================================================================= */
+    document.addEventListener('DOMContentLoaded', () => {
+      const diffForm = document.getElementById('differentiation-form');
+      const diffExpr = document.getElementById('differentiation-expression');
+      const diffVar = document.getElementById('differentiation-variable');
+      const diffOrders = document.querySelectorAll('.order-btn');
+      const diffClear = document.getElementById('differentiation-clear-btn');
+      const diffSubmit = document.getElementById('differentiation-submit-btn');
+      
+      let currentOrder = 1;
+      let diffChart = null;
+      let rawDiffResult = '';
+
+      diffOrders.forEach(btn => {
+        btn.addEventListener('click', () => {
+          diffOrders.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          currentOrder = parseInt(btn.dataset.order, 10);
+        });
+      });
+
+      document.querySelectorAll('.diff-example-btn').forEach(btn => {
+        btn.innerHTML = formatMath(btn.dataset.expr);
+        btn.addEventListener('click', () => { diffExpr.value = btn.dataset.expr; diffSubmit.disabled = false; });
+      });
+
+      diffClear.addEventListener('click', () => {
+        diffExpr.value = '';
+        diffOrders.forEach(b => b.classList.remove('active'));
+        document.querySelector('.order-btn[data-order="1"]').classList.add('active');
+        currentOrder = 1;
+        document.getElementById('differentiation-error-container').style.display = 'none';
+        document.getElementById('differentiation-result-container').style.display = 'none';
+        document.getElementById('differentiation-steps-container').style.display = 'none';
+        document.getElementById('differentiation-graph-container').style.display = 'none';
+        diffSubmit.disabled = true;
+        if (diffChart) diffChart.destroy();
+      });
+
+      diffExpr.addEventListener('input', () => diffSubmit.disabled = diffExpr.value.trim().length === 0);
+
+      document.getElementById('differentiation-copy-btn').addEventListener('click', async (e) => {
+        if (!rawDiffResult) return;
+        try {
+          await navigator.clipboard.writeText(rawDiffResult);
+          e.target.innerText = '✓ Copied';
+          setTimeout(() => e.target.innerText = 'Copy', 2000);
+        } catch (err) {}
+      });
+
+      diffForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (!diffExpr.value.trim()) return;
+
+        diffSubmit.disabled = true; diffSubmit.innerText = 'Solving...';
+        document.getElementById('differentiation-error-container').style.display = 'none';
+        document.getElementById('differentiation-result-container').style.display = 'none';
+        document.getElementById('differentiation-steps-container').style.display = 'none';
+        document.getElementById('differentiation-graph-container').style.display = 'none';
+
+        setTimeout(() => {
+          const res = solveDifferentiation(diffExpr.value, diffVar.value, currentOrder);
+          
+          diffSubmit.disabled = false; diffSubmit.innerText = 'Solve';
+
+          if (!res.success) {
+            const errDiv = document.getElementById('differentiation-error-container');
+            errDiv.innerText = res.error; errDiv.style.display = 'block';
+            return;
+          }
+
+          const data = res.data;
+          rawDiffResult = data.result;
+          document.getElementById('differentiation-result-html').innerHTML = formatMath(data.result);
+          document.getElementById('differentiation-result-container').style.display = 'block';
+
+          if (data.steps && data.steps.length > 0) {
+            document.getElementById('differentiation-steps-list').innerHTML = data.steps.map((step, i) => `<li class="step-item"><div class="step-number">${i + 1}</div><div class="step-content">${formatMath(step)}</div></li>`).join('');
+            document.getElementById('differentiation-steps-container').style.display = 'block';
+          }
+
+          if (data.graphData && data.graphData.length > 0) {
+            if (diffChart) diffChart.destroy();
+            const canvas = document.getElementById('differentiation-graph-canvas');
+            
+            let resultLabel = "f'(x)";
+            if (currentOrder === 2) resultLabel = "f''(x)";
+            else if (currentOrder === 3) resultLabel = "f'''(x)";
+            else if (currentOrder > 3) resultLabel = `f^(${currentOrder})(x)`;
+
+            diffChart = new Chart(canvas, {
+              type: 'line',
+              data: {
+                labels: data.graphData.map(d => d.x),
+                datasets: [
+                  { label: 'f(x)', data: data.graphData.map(d => d.original), borderColor: '#2563eb', borderWidth: 2, pointRadius: 0, tension: 0.1, spanGaps: true },
+                  { label: resultLabel, data: data.graphData.map(d => d.result), borderColor: '#10b981', borderWidth: 2, pointRadius: 0, tension: 0.1, spanGaps: true }
+                ]
+              },
+              options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false } }
+            });
+            document.getElementById('differentiation-graph-container').style.display = 'block';
+          }
+
+          saveHistory('differentiation', diffExpr.value, data.result);
+          loadHistory('differentiation');
+        }, 100);
+      });
+    });
+  </script>
+</body>
+</html>
