@@ -82,8 +82,30 @@
     .quick-example-btn:hover { color: var(--accent); background: rgba(37, 99, 235, 0.05); }
 
     .math-toolbar { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-top: 0.5rem; }
-    .math-btn { padding: 0.25rem 0.625rem; border-radius: 0.375rem; border: 1px solid var(--border); background: #fff; font-family: var(--font-mono); font-size: 0.875rem; color: var(--foreground); transition: all 0.2s; }
+    .math-btn { padding: 0.25rem 0.625rem; border-radius: 0.375rem; border: 1px solid var(--border); background: #fff; font-family: var(--font-mono); font-size: 0.875rem; color: var(--foreground); transition: all 0.2s; cursor: pointer; }
     .math-btn:hover { background: var(--section-bg); border-color: var(--accent); color: var(--accent); }
+
+    .fn-toggle-btn { display: inline-flex; align-items: center; gap: 0.375rem; margin-top: 0.5rem; padding: 0.375rem 0.75rem; border-radius: 0.5rem; background: linear-gradient(135deg, rgba(37,99,235,0.08), rgba(37,99,235,0.04)); border: 1px solid rgba(37,99,235,0.2); color: var(--accent); font-size: 0.8rem; font-weight: 500; cursor: pointer; transition: all 0.25s ease; }
+    .fn-toggle-btn:hover { background: linear-gradient(135deg, rgba(37,99,235,0.15), rgba(37,99,235,0.08)); border-color: var(--accent); }
+    .fn-toggle-btn .arrow { display: inline-block; transition: transform 0.3s ease; font-size: 0.6rem; }
+    .fn-toggle-btn.open .arrow { transform: rotate(180deg); }
+    .fn-panel { max-height: 0; overflow: hidden; transition: max-height 0.35s ease, opacity 0.25s ease; opacity: 0; margin-top: 0.25rem; }
+    .fn-panel.open { max-height: 500px; opacity: 1; }
+    .fn-category { margin-bottom: 0.5rem; }
+    .fn-category-label { font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 0.25rem; display: block; }
+
+    /* Formula Reference */
+    .formula-toggle { display: flex; align-items: center; gap: 0.5rem; width: 100%; padding: 0.75rem 1rem; border-radius: 0.75rem; background: linear-gradient(135deg, #eff6ff, #f0fdf4); border: 1px solid #bfdbfe; color: #1e40af; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.25s; }
+    .formula-toggle:hover { background: linear-gradient(135deg, #dbeafe, #dcfce7); border-color: #93c5fd; }
+    .formula-toggle .arrow { margin-left: auto; transition: transform 0.3s; font-size: 0.65rem; }
+    .formula-toggle.open .arrow { transform: rotate(180deg); }
+    .formula-body { max-height: 0; overflow: hidden; transition: max-height 0.4s ease, opacity 0.3s ease; opacity: 0; }
+    .formula-body.open { max-height: 3000px; opacity: 1; }
+    .formula-section { margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); }
+    .formula-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .formula-section-title { font-size: 0.8rem; font-weight: 700; color: var(--accent); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.375rem; }
+    .formula-row { display: flex; flex-wrap: wrap; gap: 0.375rem; margin-bottom: 0.25rem; }
+    .formula-chip { padding: 0.2rem 0.5rem; border-radius: 0.375rem; background: var(--section-bg); border: 1px solid var(--border); font-family: var(--font-mono); font-size: 0.75rem; color: var(--foreground); line-height: 1.5; }
 
     .limits-toolbar { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-top: 0.5rem; }
     .limits-toolbar .limit-btn { padding: 0.2rem 0.5rem; border-radius: 0.375rem; border: 1px solid var(--border); background: #fff; font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted); transition: all 0.15s; cursor: pointer; }
@@ -117,7 +139,7 @@
 
     /* Navbar */
     .navbar { position: sticky; top: 0; z-index: 50; background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); }
-    .nav-container { max-width: 72rem; margin: 0 auto; padding: 0 1rem; display: flex; align-items: center; justify-content: space-between; height: 4rem; }
+    .nav-container { width: 100%; padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 4rem; }
     .nav-logo { display: flex; align-items: center; gap: 0.5rem; font-weight: 600; font-size: 1.125rem; }
     .nav-links { display: flex; gap: 0.25rem; }
     .nav-links a { padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 500; color: var(--muted); }
@@ -210,19 +232,13 @@
                 <label for="integration-expression" class="input-label">Enter your expression</label>
                 <input type="text" id="integration-expression" class="text-input math-input" placeholder="e.g. x^2 + 3*x" autocomplete="off" spellcheck="false">
                 
-                <div class="math-toolbar">
-                  <button type="button" class="math-btn" data-val="pi">π</button>
-                  <button type="button" class="math-btn" data-val="e">e</button>
-                  <button type="button" class="math-btn" data-val="sin(">sin</button>
-                  <button type="button" class="math-btn" data-val="cos(">cos</button>
-                  <button type="button" class="math-btn" data-val="tan(">tan</button>
-                  <button type="button" class="math-btn" data-val="asin(">sin⁻¹</button>
-                  <button type="button" class="math-btn" data-val="acos(">cos⁻¹</button>
-                  <button type="button" class="math-btn" data-val="atan(">tan⁻¹</button>
-                  <button type="button" class="math-btn" data-val="sqrt(">√</button>
-                  <button type="button" class="math-btn" data-val="ln(">ln</button>
-                  <button type="button" class="math-btn" data-val="^2">x²</button>
-                  <button type="button" class="math-btn" data-val="^(">x^y</button>
+                <button type="button" class="fn-toggle-btn" data-panel="int-fn-panel">Insert Functions <span class="arrow">▼</span></button>
+                <div class="fn-panel" id="int-fn-panel">
+                  <div class="fn-category"><span class="fn-category-label">Operators</span><div class="math-toolbar"><button type="button" class="math-btn" data-val="+">+</button><button type="button" class="math-btn" data-val="-">−</button><button type="button" class="math-btn" data-val="*">×</button><button type="button" class="math-btn" data-val="/">÷</button><button type="button" class="math-btn" data-val="^2">x²</button><button type="button" class="math-btn" data-val="^3">x³</button><button type="button" class="math-btn" data-val="^(">xⁿ</button><button type="button" class="math-btn" data-val="(">(</button><button type="button" class="math-btn" data-val=")">)</button></div></div>
+                  <div class="fn-category"><span class="fn-category-label">Trigonometric</span><div class="math-toolbar"><button type="button" class="math-btn" data-val="sin(">sin</button><button type="button" class="math-btn" data-val="cos(">cos</button><button type="button" class="math-btn" data-val="tan(">tan</button><button type="button" class="math-btn" data-val="cot(">cot</button><button type="button" class="math-btn" data-val="sec(">sec</button><button type="button" class="math-btn" data-val="csc(">csc</button><button type="button" class="math-btn" data-val="(sin())^2">sin²</button><button type="button" class="math-btn" data-val="(cos())^2">cos²</button><button type="button" class="math-btn" data-val="(tan())^2">tan²</button></div></div>
+                  <div class="fn-category"><span class="fn-category-label">Inverse Trig</span><div class="math-toolbar"><button type="button" class="math-btn" data-val="sin⁻¹(">sin⁻¹</button><button type="button" class="math-btn" data-val="cos⁻¹(">cos⁻¹</button><button type="button" class="math-btn" data-val="tan⁻¹(">tan⁻¹</button></div></div>
+                  <div class="fn-category"><span class="fn-category-label">Constants</span><div class="math-toolbar"><button type="button" class="math-btn" data-val="pi">π</button><button type="button" class="math-btn" data-val="e">e</button><button type="button" class="math-btn" data-val="Infinity">∞</button></div></div>
+                  <div class="fn-category"><span class="fn-category-label">Functions</span><div class="math-toolbar"><button type="button" class="math-btn" data-val="^2">x²</button><button type="button" class="math-btn" data-val="sqrt(">√</button><button type="button" class="math-btn" data-val="ln(">ln</button><button type="button" class="math-btn" data-val="log(">log</button><button type="button" class="math-btn" data-val="abs(">|x|</button><button type="button" class="math-btn" data-val="exp(">eˣ</button></div></div>
                 </div>
 
                 <div class="quick-examples">
@@ -307,6 +323,8 @@
                 <canvas id="integration-graph-canvas"></canvas>
               </div>
             </div>
+
+            <div id="integration-formula-ref" class="formula-ref-container"></div>
           </div>
           <div class="history-sidebar">
             <div class="card">
@@ -334,19 +352,13 @@
                 <label for="differentiation-expression" class="input-label">Enter your function</label>
                 <input type="text" id="differentiation-expression" class="text-input math-input" placeholder="e.g. x^3 + 2*x" autocomplete="off" spellcheck="false">
                 
-                <div class="math-toolbar">
-                  <button type="button" class="math-btn" data-val="pi">π</button>
-                  <button type="button" class="math-btn" data-val="e">e</button>
-                  <button type="button" class="math-btn" data-val="sin(">sin</button>
-                  <button type="button" class="math-btn" data-val="cos(">cos</button>
-                  <button type="button" class="math-btn" data-val="tan(">tan</button>
-                  <button type="button" class="math-btn" data-val="asin(">sin⁻¹</button>
-                  <button type="button" class="math-btn" data-val="acos(">cos⁻¹</button>
-                  <button type="button" class="math-btn" data-val="atan(">tan⁻¹</button>
-                  <button type="button" class="math-btn" data-val="sqrt(">√</button>
-                  <button type="button" class="math-btn" data-val="ln(">ln</button>
-                  <button type="button" class="math-btn" data-val="^2">x²</button>
-                  <button type="button" class="math-btn" data-val="^(">x^y</button>
+                <button type="button" class="fn-toggle-btn" data-panel="diff-fn-panel">Insert Functions <span class="arrow">▼</span></button>
+                <div class="fn-panel" id="diff-fn-panel">
+                  <div class="fn-category"><span class="fn-category-label">Operators</span><div class="math-toolbar"><button type="button" class="math-btn" data-val="+">+</button><button type="button" class="math-btn" data-val="-">−</button><button type="button" class="math-btn" data-val="*">×</button><button type="button" class="math-btn" data-val="/">÷</button><button type="button" class="math-btn" data-val="^2">x²</button><button type="button" class="math-btn" data-val="^3">x³</button><button type="button" class="math-btn" data-val="^(">xⁿ</button><button type="button" class="math-btn" data-val="(">(</button><button type="button" class="math-btn" data-val=")">)</button></div></div>
+                  <div class="fn-category"><span class="fn-category-label">Trigonometric</span><div class="math-toolbar"><button type="button" class="math-btn" data-val="sin(">sin</button><button type="button" class="math-btn" data-val="cos(">cos</button><button type="button" class="math-btn" data-val="tan(">tan</button><button type="button" class="math-btn" data-val="cot(">cot</button><button type="button" class="math-btn" data-val="sec(">sec</button><button type="button" class="math-btn" data-val="csc(">csc</button><button type="button" class="math-btn" data-val="(sin())^2">sin²</button><button type="button" class="math-btn" data-val="(cos())^2">cos²</button><button type="button" class="math-btn" data-val="(tan())^2">tan²</button></div></div>
+                  <div class="fn-category"><span class="fn-category-label">Inverse Trig</span><div class="math-toolbar"><button type="button" class="math-btn" data-val="sin⁻¹(">sin⁻¹</button><button type="button" class="math-btn" data-val="cos⁻¹(">cos⁻¹</button><button type="button" class="math-btn" data-val="tan⁻¹(">tan⁻¹</button></div></div>
+                  <div class="fn-category"><span class="fn-category-label">Constants</span><div class="math-toolbar"><button type="button" class="math-btn" data-val="pi">π</button><button type="button" class="math-btn" data-val="e">e</button><button type="button" class="math-btn" data-val="Infinity">∞</button></div></div>
+                  <div class="fn-category"><span class="fn-category-label">Functions</span><div class="math-toolbar"><button type="button" class="math-btn" data-val="^2">x²</button><button type="button" class="math-btn" data-val="sqrt(">√</button><button type="button" class="math-btn" data-val="ln(">ln</button><button type="button" class="math-btn" data-val="log(">log</button><button type="button" class="math-btn" data-val="abs(">|x|</button><button type="button" class="math-btn" data-val="exp(">eˣ</button></div></div>
                 </div>
 
                 <div class="quick-examples">
@@ -403,6 +415,8 @@
                 <canvas id="differentiation-graph-canvas"></canvas>
               </div>
             </div>
+
+            <div id="differentiation-formula-ref" class="formula-ref-container"></div>
           </div>
           <div class="history-sidebar">
             <div class="card">
@@ -418,6 +432,86 @@
 
   <script>
     /* =========================================================================
+       FORMULA REFERENCE DATA & INJECTION
+       ========================================================================= */
+    function buildFormulaHTML() {
+      return `
+      <div class="card" style="margin-top:0.5rem;">
+        <button type="button" class="formula-toggle">📚 Formula Reference Sheet <span class="arrow">▼</span></button>
+        <div class="formula-body">
+          <div style="padding-top:1rem;">
+
+            <div class="formula-section">
+              <div class="formula-section-title">📐 Algebraic Functions</div>
+              <div class="formula-row"><span class="formula-chip">d/dx(xⁿ) = n·x<sup>n-1</sup></span><span class="formula-chip">∫xⁿ dx = x<sup>n+1</sup>/(n+1) + C</span></div>
+              <div class="formula-row"><span class="formula-chip">x</span><span class="formula-chip">x²</span><span class="formula-chip">x³</span><span class="formula-chip">x⁴</span><span class="formula-chip">x⁻¹</span><span class="formula-chip">x⁻²</span><span class="formula-chip">√x</span><span class="formula-chip">1/√x</span></div>
+            </div>
+
+            <div class="formula-section">
+              <div class="formula-section-title">📈 Exponential Functions</div>
+              <div class="formula-row"><span class="formula-chip">d/dx(eˣ) = eˣ</span><span class="formula-chip">∫eˣ dx = eˣ + C</span></div>
+              <div class="formula-row"><span class="formula-chip">d/dx(aˣ) = aˣ·ln(a)</span></div>
+            </div>
+
+            <div class="formula-section">
+              <div class="formula-section-title">📊 Logarithmic Functions</div>
+              <div class="formula-row"><span class="formula-chip">d/dx(ln x) = 1/x</span><span class="formula-chip">∫(1/x) dx = ln|x| + C</span></div>
+            </div>
+
+            <div class="formula-section">
+              <div class="formula-section-title">🔄 Trigonometric Functions</div>
+              <div class="formula-row"><span class="formula-chip">d/dx(sin x) = cos x</span><span class="formula-chip">d/dx(cos x) = -sin x</span></div>
+              <div class="formula-row"><span class="formula-chip">d/dx(tan x) = sec²x</span><span class="formula-chip">d/dx(cot x) = -csc²x</span></div>
+              <div class="formula-row"><span class="formula-chip">d/dx(sec x) = sec x·tan x</span><span class="formula-chip">d/dx(csc x) = -csc x·cot x</span></div>
+            </div>
+
+            <div class="formula-section">
+              <div class="formula-section-title">💡 Important Identities</div>
+              <div class="formula-row"><span class="formula-chip">sin²x = (1-cos2x)/2</span><span class="formula-chip">cos²x = (1+cos2x)/2</span></div>
+              <div class="formula-row"><span class="formula-chip">tan²x = sec²x - 1</span><span class="formula-chip">cot²x = csc²x - 1</span></div>
+            </div>
+
+            <div class="formula-section">
+              <div class="formula-section-title">↩️ Inverse Trigonometric Derivatives</div>
+              <div class="formula-row"><span class="formula-chip">d/dx(sin⁻¹x) = 1/√(1-x²)</span></div>
+              <div class="formula-row"><span class="formula-chip">d/dx(cos⁻¹x) = -1/√(1-x²)</span></div>
+              <div class="formula-row"><span class="formula-chip">d/dx(tan⁻¹x) = 1/(1+x²)</span></div>
+            </div>
+
+            <div class="formula-section">
+              <div class="formula-section-title">∫ Standard Integrals</div>
+              <div class="formula-row"><span class="formula-chip">∫dx/(a²+x²) = (1/a)tan⁻¹(x/a) + C</span></div>
+              <div class="formula-row"><span class="formula-chip">∫dx/√(a²-x²) = sin⁻¹(x/a) + C</span></div>
+              <div class="formula-row"><span class="formula-chip">∫dx/(x²-a²) = (1/2a)ln|(x-a)/(x+a)| + C</span></div>
+            </div>
+
+            <div class="formula-section">
+              <div class="formula-section-title">🔗 Composite Functions</div>
+              <div class="formula-row"><span class="formula-chip">d/dx[sin(ax+b)] = a·cos(ax+b)</span></div>
+              <div class="formula-row"><span class="formula-chip">d/dx[cos(ax+b)] = -a·sin(ax+b)</span></div>
+              <div class="formula-row"><span class="formula-chip">d/dx[e<sup>ax+b</sup>] = a·e<sup>ax+b</sup></span></div>
+              <div class="formula-row"><span class="formula-chip">d/dx[(ax+b)ⁿ] = an(ax+b)<sup>n-1</sup></span></div>
+            </div>
+
+          </div>
+        </div>
+      </div>`;
+    }
+
+    // Inject into both pages
+    document.getElementById('integration-formula-ref').innerHTML = buildFormulaHTML();
+    document.getElementById('differentiation-formula-ref').innerHTML = buildFormulaHTML();
+
+    // Toggle logic for formula panels
+    document.querySelectorAll('.formula-toggle').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const body = btn.nextElementSibling;
+        btn.classList.toggle('open');
+        body.classList.toggle('open');
+      });
+    });
+
+    /* =========================================================================
        COMMON UTILITIES (common.js)
        ========================================================================= */
     const NAV_LINKS = [
@@ -429,10 +523,11 @@
     function escapeHtml(str) { return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
     function formatMath(text) {
       if (!text) return "";
-      let html = escapeHtml(String(text));
-      html = html.replace(/([\w)])\^\(([^)]+)\)/g, "$1<sup>$2</sup>");
-      html = html.replace(/([\w)])\^(\d{2,})/g, "$1<sup>$2</sup>");
-      html = html.replace(/([\w)])\^(\d)/g, "$1<sup>$2</sup>");
+      let html = escapeHtml(text);
+      // Clean up nerdamer's output to look better
+      html = html.replace(/asin\(/g, "sin⁻¹(");
+      html = html.replace(/acos\(/g, "cos⁻¹(");
+      html = html.replace(/atan\(/g, "tan⁻¹(");
       html = html.replace(/sqrt\(/g, "√(");
       html = html.replace(/\bpi\b/g, "π");
       html = html.replace(/\bInfinity\b/gi, "∞");
@@ -440,6 +535,15 @@
       html = html.replace(/\)\*([a-zA-Z(])/g, ")$1");
       html = html.replace(/\*/g, "·");
       return html;
+    }
+
+    function preprocessMath(expr) {
+      if (!expr) return "";
+      let processed = expr;
+      processed = processed.replace(/sin⁻¹/g, "asin");
+      processed = processed.replace(/cos⁻¹/g, "acos");
+      processed = processed.replace(/tan⁻¹/g, "atan");
+      return processed;
     }
 
     function renderNavbar() {
@@ -509,32 +613,49 @@
       btn.addEventListener('click', (e) => {
         e.preventDefault();
         
-        // Find the closest input if we don't have one focused, or use the last focused one
-        let targetInput = lastFocusedInput;
-        
-        // If no input was focused yet, default to the main expression input on the current view
-        if (!targetInput) {
-          const activeView = document.querySelector('.page-view.active');
-          if (activeView) {
-            targetInput = activeView.querySelector('.math-input');
-          }
+        // Find the expression input for the current page's form
+        let targetInput = null;
+        const parentView = btn.closest('.page-view');
+        if (parentView) {
+          // Always target the main expression input of this view
+          targetInput = parentView.querySelector('input[id$="-expression"]');
         }
+        // Fallback
+        if (!targetInput) targetInput = lastFocusedInput;
 
         if (targetInput) {
           const val = btn.getAttribute('data-val');
-          const start = targetInput.selectionStart;
-          const end = targetInput.selectionEnd;
+          const start = targetInput.selectionStart || targetInput.value.length;
+          const end = targetInput.selectionEnd || targetInput.value.length;
           const text = targetInput.value;
           
           targetInput.value = text.slice(0, start) + val + text.slice(end);
           
-          // Move cursor after inserted text
-          const newCursorPos = start + val.length;
+          let newCursorPos = start + val.length;
+          // If the inserted value contains "()", place the cursor between them
+          if (val.includes('()')) {
+            newCursorPos = start + val.indexOf('()') + 1;
+          }
+          
           targetInput.setSelectionRange(newCursorPos, newCursorPos);
           targetInput.focus();
 
-          // Trigger input event to update solve button state
           targetInput.dispatchEvent(new Event('input'));
+        }
+      });
+    });
+
+    /* =========================================================================
+       DROPDOWN TOGGLE LOGIC
+       ========================================================================= */
+    document.querySelectorAll('.fn-toggle-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const panelId = btn.getAttribute('data-panel');
+        const panel = document.getElementById(panelId);
+        if (panel) {
+          panel.classList.toggle('open');
+          btn.classList.toggle('open');
         }
       });
     });
@@ -640,32 +761,33 @@
 
     function solveIntegration(expression, variable, mode, lower, upper) {
       try {
+        const preprocessedExpr = preprocessMath(expression);
         const steps = [];
         steps.push(`Original: ∫(${expression}) d${variable}`);
         
-        const expanded = nerdamer(`expand(${expression})`).toString();
-        if (expanded !== expression) steps.push(`Expand: ∫(${expanded}) d${variable}`);
+        const expanded = nerdamer(`expand(${preprocessedExpr})`).toString();
+        if (expanded !== preprocessedExpr) steps.push(`Expand: ∫(${expanded}) d${variable}`);
 
         if (mode === 'indefinite') {
-          const result = nerdamer(`integrate(${expression}, ${variable})`).toString() + " + C";
+          const result = nerdamer(`integrate(${preprocessedExpr}, ${variable})`).toString() + " + C";
           steps.push(`Integrate: ${result}`);
-          return { success: true, data: { result, steps, graphData: generateGraphData(expression, result, variable, true) } };
+          return { success: true, data: { result, steps, graphData: generateGraphData(preprocessedExpr, result, variable, true) } };
         } else {
           // Definite
-          const indefinite = nerdamer(`integrate(${expression}, ${variable})`).toString();
+          const indefinite = nerdamer(`integrate(${preprocessedExpr}, ${variable})`).toString();
           steps.push(`Indefinite Integral: ${indefinite}`);
-          const upperSub = nerdamer(indefinite, { [variable]: upper }).toString();
-          const lowerSub = nerdamer(indefinite, { [variable]: lower }).toString();
+          const upperSub = nerdamer(indefinite, { [variable]: preprocessMath(upper) }).toString();
+          const lowerSub = nerdamer(indefinite, { [variable]: preprocessMath(lower) }).toString();
           steps.push(`F(${upper}) = ${upperSub}`);
           steps.push(`F(${lower}) = ${lowerSub}`);
           steps.push(`F(${upper}) - F(${lower})`);
           
-          const resultExpr = `defint(${expression}, ${lower}, ${upper}, ${variable})`;
+          const resultExpr = `defint(${preprocessedExpr}, ${preprocessMath(lower)}, ${preprocessMath(upper)}, ${variable})`;
           const exactResult = nerdamer(resultExpr).toString();
           steps.push(`Exact Result: ${exactResult}`);
           
           const numericalResult = nerdamer(exactResult).evaluate().text('decimals');
-          return { success: true, data: { result: exactResult, numericalResult, steps, graphData: generateGraphData(expression, indefinite, variable, true) } };
+          return { success: true, data: { result: exactResult, numericalResult, steps, graphData: generateGraphData(preprocessedExpr, indefinite, variable, true) } };
         }
       } catch (err) {
         return { success: false, error: err.message || 'Failed to compute integral.' };
@@ -674,9 +796,10 @@
 
     function solveDifferentiation(expression, variable, order) {
       try {
+        const preprocessedExpr = preprocessMath(expression);
         const steps = [];
-        let currentExpr = expression;
-        steps.push(`Original: ${currentExpr}`);
+        let currentExpr = preprocessedExpr;
+        steps.push(`Original: ${expression}`);
 
         for (let i = 1; i <= order; i++) {
           const expanded = nerdamer(`expand(${currentExpr})`).toString();
@@ -686,7 +809,7 @@
           steps.push(`Derivative ${i}: ${currentExpr}`);
         }
 
-        return { success: true, data: { result: currentExpr, steps, graphData: generateGraphData(expression, currentExpr, variable, false) } };
+        return { success: true, data: { result: currentExpr, steps, graphData: generateGraphData(preprocessedExpr, currentExpr, variable, false) } };
       } catch (err) {
         return { success: false, error: err.message || 'Failed to compute derivative.' };
       }
