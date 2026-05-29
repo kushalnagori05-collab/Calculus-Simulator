@@ -154,18 +154,15 @@
       <section class="py-20" style="position: relative; overflow: hidden;">
         <div style="position: absolute; inset: 0; background: radial-gradient(#e5e7eb 1px, transparent 1px) 0 0 / 20px 20px; opacity: 0.5;"></div>
         <div class="max-w-4xl text-center" style="position: relative; padding-top: 5rem; padding-bottom: 5rem;">
-          <div class="animate-fade-in-up" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0.75rem; border-radius: 9999px; background: rgba(37, 99, 235, 0.1); color: var(--accent); font-size: 0.875rem; font-weight: 500; margin-bottom: 1.5rem;">
-            <span>📐</span> Offline HTML File
-          </div>
           <h1 class="animate-fade-in-up delay-100 font-bold" style="font-size: clamp(2.25rem, 5vw, 3.75rem); line-height: 1.1; letter-spacing: -0.025em; margin-bottom: 1.5rem;">
             Learn Calculus <span class="text-accent">Visually</span> and <span class="text-accent">Easily</span>
           </h1>
           <p class="animate-fade-in-up delay-200 text-muted" style="font-size: 1.125rem; max-width: 42rem; margin: 0 auto 2.5rem; line-height: 1.6;">
-            A completely standalone simulator for solving Integration and Differentiation problems. No backend server required!
+            A modern simulator for solving Integration and Differentiation problems step-by-step with beautiful graph visualizations.
           </p>
-          <div class="animate-fade-in-up delay-300 flex gap-4 justify-center items-center">
-            <a href="#integration" class="btn-primary" style="width: 16rem; text-align: center;">Start Integration →</a>
-            <a href="#differentiation" class="btn-secondary" style="width: 16rem; text-align: center; border: 1px solid var(--border); background: #fff;">Start Differentiation →</a>
+          <div class="animate-fade-in-up delay-300" style="display: flex; flex-wrap: wrap; gap: 1.5rem; justify-content: center; align-items: center;">
+            <a href="#integration" class="btn-primary" style="width: 16rem; text-align: center; padding: 0.875rem 1.5rem; font-size: 1rem;">Start Integration →</a>
+            <a href="#differentiation" class="btn-secondary" style="width: 16rem; text-align: center; padding: 0.875rem 1.5rem; font-size: 1rem; border: 1px solid var(--border); background: #fff;">Start Differentiation →</a>
           </div>
         </div>
       </section>
@@ -417,46 +414,6 @@
       </div>
     </div>
 
-    <!-- ============================================== -->
-    <!-- VIEW: ABOUT -->
-    <!-- ============================================== -->
-    <div id="view-about" class="page-view">
-      <div class="py-10 max-w-4xl">
-        <h1 class="font-bold mb-4" style="font-size: 1.875rem;">About Calculus Simulator</h1>
-        <p class="text-muted mb-12" style="font-size: 1.125rem; line-height: 1.7;">
-          Calculus Simulator is a free, educational offline tool designed to help students learn and practice integration and differentiation. Enter any expression, get step-by-step solutions, and visualize the results on interactive graphs.
-        </p>
-        <section class="mb-12">
-          <h2 class="font-semibold mb-6" style="font-size: 1.5rem;">How to Use</h2>
-          <ol class="steps-list" style="color: rgba(17,24,39,0.9); font-size: 1rem;">
-            <li class="step-item" style="align-items: flex-start;"><span class="step-number" style="background: var(--accent); color: #fff;">1</span><span>Navigate to <strong>Integration</strong> or <strong>Differentiation</strong>.</span></li>
-            <li class="step-item" style="align-items: flex-start;"><span class="step-number" style="background: var(--accent); color: #fff;">2</span><span>Type a math expression using standard notation: <code class="font-mono">x^2</code>, <code class="font-mono">sin(x)</code>.</span></li>
-            <li class="step-item" style="align-items: flex-start;"><span class="step-number" style="background: var(--accent); color: #fff;">3</span><span>Click <strong>Solve</strong>.</span></li>
-          </ol>
-        </section>
-        <section>
-          <h2 class="font-semibold mb-6" style="font-size: 1.5rem;">Technologies Used</h2>
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
-            <div class="card mb-0">
-              <h3 class="font-semibold" style="font-size: 0.875rem;">Single HTML File</h3>
-              <p class="text-muted mt-1" style="font-size: 0.75rem;">Runs entirely offline, no server needed.</p>
-            </div>
-            <div class="card mb-0">
-              <h3 class="font-semibold" style="font-size: 0.875rem;">Nerdamer</h3>
-              <p class="text-muted mt-1" style="font-size: 0.75rem;">Symbolic math engine.</p>
-            </div>
-            <div class="card mb-0">
-              <h3 class="font-semibold" style="font-size: 0.875rem;">Chart.js</h3>
-              <p class="text-muted mt-1" style="font-size: 0.75rem;">Graph visualization library.</p>
-            </div>
-            <div class="card mb-0">
-              <h3 class="font-semibold" style="font-size: 0.875rem;">Local Storage</h3>
-              <p class="text-muted mt-1" style="font-size: 0.75rem;">Database for calculation history.</p>
-            </div>
-          </div>
-        </section>
-      </div>
-    </div>
   </main>
 
   <script>
@@ -467,7 +424,6 @@
       { href: "#home", label: "Home" },
       { href: "#integration", label: "Integration" },
       { href: "#differentiation", label: "Differentiation" },
-      { href: "#about", label: "About" },
     ];
 
     function escapeHtml(str) { return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
