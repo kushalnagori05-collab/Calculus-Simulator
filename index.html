@@ -81,6 +81,15 @@
     .quick-example-btn { padding: 0.125rem 0.5rem; border-radius: 0.375rem; background: var(--section-bg); font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted); }
     .quick-example-btn:hover { color: var(--accent); background: rgba(37, 99, 235, 0.05); }
 
+    .math-toolbar { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-top: 0.5rem; }
+    .math-btn { padding: 0.25rem 0.625rem; border-radius: 0.375rem; border: 1px solid var(--border); background: #fff; font-family: var(--font-mono); font-size: 0.875rem; color: var(--foreground); transition: all 0.2s; }
+    .math-btn:hover { background: var(--section-bg); border-color: var(--accent); color: var(--accent); }
+
+    .limits-toolbar { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-top: 0.5rem; }
+    .limits-toolbar .limit-btn { padding: 0.2rem 0.5rem; border-radius: 0.375rem; border: 1px solid var(--border); background: #fff; font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted); transition: all 0.15s; cursor: pointer; }
+    .limits-toolbar .limit-btn:hover { background: rgba(37, 99, 235, 0.05); border-color: var(--accent); color: var(--accent); }
+    .limits-toolbar-label { font-size: 0.7rem; color: var(--muted); font-weight: 500; margin-right: 0.125rem; }
+
     .toggle-group { display: flex; gap: 0.5rem; }
     .toggle-btn { padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 500; text-transform: capitalize; background: var(--section-bg); color: var(--muted); }
     .toggle-btn.active { background: var(--accent); color: #fff; }
@@ -202,7 +211,23 @@
             <form id="integration-form" class="card">
               <div class="input-group">
                 <label for="integration-expression" class="input-label">Enter your expression</label>
-                <input type="text" id="integration-expression" class="text-input" placeholder="e.g. x^2 + 3*x" autocomplete="off" spellcheck="false">
+                <input type="text" id="integration-expression" class="text-input math-input" placeholder="e.g. x^2 + 3*x" autocomplete="off" spellcheck="false">
+                
+                <div class="math-toolbar">
+                  <button type="button" class="math-btn" data-val="pi">π</button>
+                  <button type="button" class="math-btn" data-val="e">e</button>
+                  <button type="button" class="math-btn" data-val="sin(">sin</button>
+                  <button type="button" class="math-btn" data-val="cos(">cos</button>
+                  <button type="button" class="math-btn" data-val="tan(">tan</button>
+                  <button type="button" class="math-btn" data-val="asin(">sin⁻¹</button>
+                  <button type="button" class="math-btn" data-val="acos(">cos⁻¹</button>
+                  <button type="button" class="math-btn" data-val="atan(">tan⁻¹</button>
+                  <button type="button" class="math-btn" data-val="sqrt(">√</button>
+                  <button type="button" class="math-btn" data-val="ln(">ln</button>
+                  <button type="button" class="math-btn" data-val="^2">x²</button>
+                  <button type="button" class="math-btn" data-val="^(">x^y</button>
+                </div>
+
                 <div class="quick-examples">
                   <span class="text-muted" style="font-size: 0.75rem;">Try:</span>
                   <button type="button" class="quick-example-btn integration-example-btn" data-expr="x^2"></button>
@@ -226,14 +251,34 @@
                     <option value="x">x</option><option value="y">y</option><option value="t">t</option><option value="z">z</option><option value="u">u</option>
                   </select>
                 </div>
-                <div id="limits-container" style="display: none; gap: 1rem;">
-                  <div>
-                    <label for="lower" class="input-label">Lower Limit</label>
-                    <input type="text" id="lower" class="text-input font-mono" style="width: 5rem;" placeholder="0">
+                <div id="limits-container" style="display: none; flex-direction: column; gap: 0.75rem;">
+                  <div style="display: flex; gap: 1rem; align-items: flex-end;">
+                    <div>
+                      <label for="lower" class="input-label">Lower Limit</label>
+                      <input type="text" id="lower" class="text-input font-mono math-input" style="width: 7rem;" placeholder="0">
+                    </div>
+                    <div>
+                      <label for="upper" class="input-label">Upper Limit</label>
+                      <input type="text" id="upper" class="text-input font-mono math-input" style="width: 7rem;" placeholder="1">
+                    </div>
                   </div>
-                  <div>
-                    <label for="upper" class="input-label">Upper Limit</label>
-                    <input type="text" id="upper" class="text-input font-mono" style="width: 5rem;" placeholder="1">
+                  <div class="limits-toolbar" id="integration-limits-toolbar">
+                    <span class="limits-toolbar-label">Insert:</span>
+                    <button type="button" class="limit-btn" data-val="0">0</button>
+                    <button type="button" class="limit-btn" data-val="1">1</button>
+                    <button type="button" class="limit-btn" data-val="-1">-1</button>
+                    <button type="button" class="limit-btn" data-val="pi">π</button>
+                    <button type="button" class="limit-btn" data-val="pi/2">π/2</button>
+                    <button type="button" class="limit-btn" data-val="pi/3">π/3</button>
+                    <button type="button" class="limit-btn" data-val="pi/4">π/4</button>
+                    <button type="button" class="limit-btn" data-val="pi/6">π/6</button>
+                    <button type="button" class="limit-btn" data-val="2*pi">2π</button>
+                    <button type="button" class="limit-btn" data-val="e">e</button>
+                    <button type="button" class="limit-btn" data-val="Infinity">∞</button>
+                    <button type="button" class="limit-btn" data-val="-Infinity">-∞</button>
+                    <button type="button" class="limit-btn" data-val="sqrt(2)">√2</button>
+                    <button type="button" class="limit-btn" data-val="sqrt(3)">√3</button>
+                    <button type="button" class="limit-btn" data-val="ln(2)">ln2</button>
                   </div>
                 </div>
               </div>
@@ -290,7 +335,23 @@
             <form id="differentiation-form" class="card">
               <div class="input-group">
                 <label for="differentiation-expression" class="input-label">Enter your function</label>
-                <input type="text" id="differentiation-expression" class="text-input" placeholder="e.g. x^3 + 2*x" autocomplete="off" spellcheck="false">
+                <input type="text" id="differentiation-expression" class="text-input math-input" placeholder="e.g. x^3 + 2*x" autocomplete="off" spellcheck="false">
+                
+                <div class="math-toolbar">
+                  <button type="button" class="math-btn" data-val="pi">π</button>
+                  <button type="button" class="math-btn" data-val="e">e</button>
+                  <button type="button" class="math-btn" data-val="sin(">sin</button>
+                  <button type="button" class="math-btn" data-val="cos(">cos</button>
+                  <button type="button" class="math-btn" data-val="tan(">tan</button>
+                  <button type="button" class="math-btn" data-val="asin(">sin⁻¹</button>
+                  <button type="button" class="math-btn" data-val="acos(">cos⁻¹</button>
+                  <button type="button" class="math-btn" data-val="atan(">tan⁻¹</button>
+                  <button type="button" class="math-btn" data-val="sqrt(">√</button>
+                  <button type="button" class="math-btn" data-val="ln(">ln</button>
+                  <button type="button" class="math-btn" data-val="^2">x²</button>
+                  <button type="button" class="math-btn" data-val="^(">x^y</button>
+                </div>
+
                 <div class="quick-examples">
                   <span class="text-muted" style="font-size: 0.75rem;">Try:</span>
                   <button type="button" class="quick-example-btn diff-example-btn" data-expr="x^3"></button>
@@ -476,6 +537,79 @@
       handleRoute();
     });
     window.addEventListener('hashchange', handleRoute);
+
+    /* =========================================================================
+       MATH KEYBOARD LOGIC
+       ========================================================================= */
+    let lastFocusedInput = null;
+
+    document.querySelectorAll('.math-input').forEach(input => {
+      input.addEventListener('focus', () => {
+        lastFocusedInput = input;
+      });
+    });
+
+    document.querySelectorAll('.math-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        
+        // Find the closest input if we don't have one focused, or use the last focused one
+        let targetInput = lastFocusedInput;
+        
+        // If no input was focused yet, default to the main expression input on the current view
+        if (!targetInput) {
+          const activeView = document.querySelector('.page-view.active');
+          if (activeView) {
+            targetInput = activeView.querySelector('.math-input');
+          }
+        }
+
+        if (targetInput) {
+          const val = btn.getAttribute('data-val');
+          const start = targetInput.selectionStart;
+          const end = targetInput.selectionEnd;
+          const text = targetInput.value;
+          
+          targetInput.value = text.slice(0, start) + val + text.slice(end);
+          
+          // Move cursor after inserted text
+          const newCursorPos = start + val.length;
+          targetInput.setSelectionRange(newCursorPos, newCursorPos);
+          targetInput.focus();
+
+          // Trigger input event to update solve button state
+          targetInput.dispatchEvent(new Event('input'));
+        }
+      });
+    });
+
+    /* =========================================================================
+       LIMITS TOOLBAR LOGIC
+       ========================================================================= */
+    let lastFocusedLimitInput = null;
+
+    // Track which limit input (lower/upper) was last focused
+    document.querySelectorAll('#lower, #upper').forEach(input => {
+      input.addEventListener('focus', () => {
+        lastFocusedLimitInput = input;
+      });
+    });
+
+    document.querySelectorAll('.limit-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+
+        // Default to "lower" if user hasn't focused a limit input yet
+        let targetInput = lastFocusedLimitInput || document.getElementById('lower');
+
+        if (targetInput) {
+          const val = btn.getAttribute('data-val');
+          targetInput.value = val;
+          targetInput.focus();
+          targetInput.dispatchEvent(new Event('input'));
+        }
+      });
+    });
 
     /* =========================================================================
        LOCAL STORAGE HISTORY (history.js)
