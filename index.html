@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Calculus Simulator — Standalone</title>
+  <title>Calculus Simulator — Studio Redesign</title>
   <meta name="description" content="A modern simulator for solving Integration and Differentiation problems step-by-step with graph visualization.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -61,8 +61,7 @@
     
     /* Layout */
     .solver-layout { display: grid; grid-template-columns: 1fr; gap: 2rem; }
-    @media (min-width: 1024px) { .solver-layout { grid-template-columns: 2fr 1fr; } .history-sidebar { display: block; } }
-    .history-sidebar { display: none; }
+    @media (min-width: 1024px) { .solver-layout { grid-template-columns: 1fr; } }
 
     /* Elements */
     .card { border-radius: 1rem; border: 1px solid var(--border); background: #fff; padding: 1.5rem; box-shadow: var(--card-shadow); margin-bottom: 1.5rem; }
@@ -126,15 +125,6 @@
 
     .graph-container { width: 100%; height: 18rem; position: relative; }
     
-    .history-list { display: flex; flex-direction: column; gap: 0.75rem; max-height: 24rem; overflow-y: auto; }
-    .history-item { padding: 0.75rem; border-radius: 0.5rem; background: var(--section-bg); font-size: 0.875rem; }
-    .history-item-top { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem; }
-    .history-badge { padding: 0.125rem 0.5rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; }
-    .history-badge.integration { background: #eff6ff; color: var(--accent); }
-    .history-badge.differentiation { background: #ecfdf5; color: #059669; }
-    .history-expression { font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .history-result { font-family: var(--font-mono); font-size: 0.75rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
     .error-msg { padding: 1rem; border-radius: 0.75rem; background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; font-size: 0.875rem; margin-bottom: 1.5rem; }
 
     /* Navbar */
@@ -163,6 +153,7 @@
     .page-view { display: none; animation: fadeInUp 0.3s ease-out forwards; }
     .page-view.active { display: block; }
   </style>
+  <link rel="stylesheet" href="theme.css">
 </head>
 <body>
 
@@ -177,14 +168,36 @@
         <div style="position: absolute; inset: 0; background: radial-gradient(#e5e7eb 1px, transparent 1px) 0 0 / 20px 20px; opacity: 0.5;"></div>
         <div class="max-w-4xl text-center" style="position: relative; padding-top: 5rem; padding-bottom: 5rem;">
           <h1 class="animate-fade-in-up delay-100 font-bold" style="font-size: clamp(2.25rem, 5vw, 3.75rem); line-height: 1.1; letter-spacing: -0.025em; margin-bottom: 1.5rem;">
-            Learn Calculus <span class="text-accent">Visually</span> and <span class="text-accent">Easily</span>
+            Calculus <span class="text-accent">Simulator</span>
           </h1>
           <p class="animate-fade-in-up delay-200 text-muted" style="font-size: 1.125rem; max-width: 42rem; margin: 0 auto 2.5rem; line-height: 1.6;">
-            A modern simulator for solving Integration and Differentiation problems step-by-step with beautiful graph visualizations.
+            A focused math workspace for integration, differentiation, clear steps, and graph-backed intuition.
           </p>
           <div class="animate-fade-in-up delay-300" style="display: flex; flex-wrap: wrap; gap: 1.5rem; justify-content: center; align-items: center;">
             <a href="#integration" class="btn-primary" style="width: 16rem; text-align: center; padding: 0.875rem 1.5rem; font-size: 1rem;">Start Integration →</a>
             <a href="#differentiation" class="btn-secondary" style="width: 16rem; text-align: center; padding: 0.875rem 1.5rem; font-size: 1rem; border: 1px solid var(--border); background: #fff;">Start Differentiation →</a>
+          </div>
+          <div class="studio-strip" aria-hidden="true">
+            <span>&int; x&sup2; dx</span>
+            <span>d/dx sin(x)</span>
+            <span>f(x) and f'(x)</span>
+            <span>&int;<sub>0</sub><sup>1</sup> 3x dx</span>
+          </div>
+          <div class="proof-board" aria-hidden="true">
+            <div class="proof-board-ruler"></div>
+            <div class="proof-note note-a">
+              <span class="note-kicker">01</span>
+              <strong>&int;(x&sup2; + 3x) dx</strong>
+              <em>x&sup3;/3 + 3x&sup2;/2 + C</em>
+            </div>
+            <div class="proof-note note-b">
+              <span class="note-kicker">02</span>
+              <strong>d/dx cos(x)</strong>
+              <em>-sin(x)</em>
+            </div>
+            <div class="proof-curve"></div>
+            <div class="proof-axis x-axis"></div>
+            <div class="proof-axis y-axis"></div>
           </div>
         </div>
       </section>
@@ -192,8 +205,8 @@
       <section class="py-20 bg-section-bg">
         <div class="max-w-6xl">
           <div class="text-center mb-12">
-            <h2 class="font-bold" style="font-size: 1.875rem;">Powerful Features</h2>
-            <p class="text-muted mt-4">Everything you need to master calculus concepts.</p>
+            <h2 class="font-bold" style="font-size: 1.875rem;">Built Like A Study Desk</h2>
+            <p class="text-muted mt-4">Simple controls, readable math, and results that stay close to the work.</p>
           </div>
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
             <div class="card mb-0">
@@ -326,12 +339,6 @@
 
             <div id="integration-formula-ref" class="formula-ref-container"></div>
           </div>
-          <div class="history-sidebar">
-            <div class="card">
-              <h3 class="font-semibold mb-4">Recent Calculations</h3>
-              <div id="integration-history-container"></div>
-            </div>
-          </div>
         </div>
       </div>
     </div>
@@ -418,12 +425,6 @@
 
             <div id="differentiation-formula-ref" class="formula-ref-container"></div>
           </div>
-          <div class="history-sidebar">
-            <div class="card">
-              <h3 class="font-semibold mb-4">Recent Calculations</h3>
-              <div id="differentiation-history-container"></div>
-            </div>
-          </div>
         </div>
       </div>
     </div>
@@ -436,43 +437,49 @@
        ========================================================================= */
     function buildFormulaHTML() {
       return `
-      <div class="card" style="margin-top:0.5rem;">
-        <button type="button" class="formula-toggle">📚 Formula Reference Sheet <span class="arrow">▼</span></button>
+      <div class="card formula-card" style="margin-top:0.5rem;">
+        <button type="button" class="formula-toggle">
+          <span class="formula-toggle-text">
+            <span class="formula-toggle-title">Formula Reference Sheet</span>
+            <span class="formula-toggle-subtitle">rules · identities · integrals</span>
+          </span>
+          <span class="arrow">▼</span>
+        </button>
         <div class="formula-body">
-          <div style="padding-top:1rem;">
+          <div class="formula-grid">
 
             <div class="formula-section">
-              <div class="formula-section-title">📐 Algebraic Functions</div>
+              <div class="formula-section-title">Algebraic Functions</div>
               <div class="formula-row"><span class="formula-chip">d/dx(xⁿ) = n·x<sup>n-1</sup></span><span class="formula-chip">∫xⁿ dx = x<sup>n+1</sup>/(n+1) + C</span></div>
               <div class="formula-row"><span class="formula-chip">x</span><span class="formula-chip">x²</span><span class="formula-chip">x³</span><span class="formula-chip">x⁴</span><span class="formula-chip">x⁻¹</span><span class="formula-chip">x⁻²</span><span class="formula-chip">√x</span><span class="formula-chip">1/√x</span></div>
             </div>
 
             <div class="formula-section">
-              <div class="formula-section-title">📈 Exponential Functions</div>
+              <div class="formula-section-title">Exponential Functions</div>
               <div class="formula-row"><span class="formula-chip">d/dx(eˣ) = eˣ</span><span class="formula-chip">∫eˣ dx = eˣ + C</span></div>
               <div class="formula-row"><span class="formula-chip">d/dx(aˣ) = aˣ·ln(a)</span></div>
             </div>
 
             <div class="formula-section">
-              <div class="formula-section-title">📊 Logarithmic Functions</div>
+              <div class="formula-section-title">Logarithmic Functions</div>
               <div class="formula-row"><span class="formula-chip">d/dx(ln x) = 1/x</span><span class="formula-chip">∫(1/x) dx = ln|x| + C</span></div>
             </div>
 
             <div class="formula-section">
-              <div class="formula-section-title">🔄 Trigonometric Functions</div>
+              <div class="formula-section-title">Trigonometric Functions</div>
               <div class="formula-row"><span class="formula-chip">d/dx(sin x) = cos x</span><span class="formula-chip">d/dx(cos x) = -sin x</span></div>
               <div class="formula-row"><span class="formula-chip">d/dx(tan x) = sec²x</span><span class="formula-chip">d/dx(cot x) = -csc²x</span></div>
               <div class="formula-row"><span class="formula-chip">d/dx(sec x) = sec x·tan x</span><span class="formula-chip">d/dx(csc x) = -csc x·cot x</span></div>
             </div>
 
             <div class="formula-section">
-              <div class="formula-section-title">💡 Important Identities</div>
+              <div class="formula-section-title">Important Identities</div>
               <div class="formula-row"><span class="formula-chip">sin²x = (1-cos2x)/2</span><span class="formula-chip">cos²x = (1+cos2x)/2</span></div>
               <div class="formula-row"><span class="formula-chip">tan²x = sec²x - 1</span><span class="formula-chip">cot²x = csc²x - 1</span></div>
             </div>
 
             <div class="formula-section">
-              <div class="formula-section-title">↩️ Inverse Trigonometric Derivatives</div>
+              <div class="formula-section-title">Inverse Trigonometric Derivatives</div>
               <div class="formula-row"><span class="formula-chip">d/dx(sin⁻¹x) = 1/√(1-x²)</span></div>
               <div class="formula-row"><span class="formula-chip">d/dx(cos⁻¹x) = -1/√(1-x²)</span></div>
               <div class="formula-row"><span class="formula-chip">d/dx(tan⁻¹x) = 1/(1+x²)</span></div>
@@ -486,7 +493,7 @@
             </div>
 
             <div class="formula-section">
-              <div class="formula-section-title">🔗 Composite Functions</div>
+              <div class="formula-section-title">Composite Functions</div>
               <div class="formula-row"><span class="formula-chip">d/dx[sin(ax+b)] = a·cos(ax+b)</span></div>
               <div class="formula-row"><span class="formula-chip">d/dx[cos(ax+b)] = -a·sin(ax+b)</span></div>
               <div class="formula-row"><span class="formula-chip">d/dx[e<sup>ax+b</sup>] = a·e<sup>ax+b</sup></span></div>
@@ -586,9 +593,6 @@
         else link.classList.remove('active');
       });
 
-      if (hash === '#integration' || hash === '#differentiation') {
-        loadHistory(hash.substring(1));
-      }
       window.scrollTo(0, 0);
     }
 
@@ -687,51 +691,6 @@
         }
       });
     });
-
-    /* =========================================================================
-       LOCAL STORAGE HISTORY (history.js)
-       ========================================================================= */
-    const HISTORY_KEY = 'calculus_history';
-    
-    function saveHistory(type, expression, result) {
-      let history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
-      history.unshift({ type, expression, result, id: Date.now() });
-      if (history.length > 20) history = history.slice(0, 20); // Keep last 20
-      localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
-    }
-
-    function getHistory() {
-      return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
-    }
-
-    function loadHistory(page) {
-      const containerId = page ? `${page}-history-container` : 'integration-history-container';
-      const container = document.getElementById(containerId);
-      if (!container) return;
-
-      const data = getHistory();
-      if (!data || data.length === 0) {
-        container.innerHTML = `<p class="text-muted" style="font-size:0.875rem;">No calculations yet. Try solving an equation!</p>`;
-        return;
-      }
-
-      const historyHtml = `
-        <ul class="history-list">
-          ${data.map(item => `
-            <li class="history-item">
-              <div class="history-item-top">
-                <span class="history-badge ${item.type}">
-                  ${item.type === 'integration' ? '∫' : 'd/dx'}
-                </span>
-                <span class="history-expression">${formatMath(item.expression)}</span>
-              </div>
-              <div class="history-result">= ${formatMath(item.result)}</div>
-            </li>
-          `).join('')}
-        </ul>
-      `;
-      container.innerHTML = historyHtml;
-    }
 
     /* =========================================================================
        MATH ENGINE (mathEngine.js logic moved to frontend)
@@ -915,8 +874,8 @@
               data: {
                 labels: data.graphData.map(d => d.x),
                 datasets: [
-                  { label: 'f(x)', data: data.graphData.map(d => d.original), borderColor: '#2563eb', borderWidth: 2, pointRadius: 0, tension: 0.1, spanGaps: true },
-                  { label: '∫f(x)dx', data: data.graphData.map(d => d.result), borderColor: '#10b981', borderWidth: 2, pointRadius: 0, tension: 0.1, spanGaps: true }
+                  { label: 'f(x)', data: data.graphData.map(d => d.original), borderColor: '#0f766e', borderWidth: 2, pointRadius: 0, tension: 0.1, spanGaps: true },
+                  { label: '∫f(x)dx', data: data.graphData.map(d => d.result), borderColor: '#a15c2f', borderWidth: 2, pointRadius: 0, tension: 0.1, spanGaps: true }
                 ]
               },
               options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false } }
@@ -924,8 +883,6 @@
             document.getElementById('integration-graph-container').style.display = 'block';
           }
 
-          saveHistory('integration', intExpr.value, data.result);
-          loadHistory('integration');
         }, 100); // slight delay for UI update
       });
     });
@@ -1027,8 +984,8 @@
               data: {
                 labels: data.graphData.map(d => d.x),
                 datasets: [
-                  { label: 'f(x)', data: data.graphData.map(d => d.original), borderColor: '#2563eb', borderWidth: 2, pointRadius: 0, tension: 0.1, spanGaps: true },
-                  { label: resultLabel, data: data.graphData.map(d => d.result), borderColor: '#10b981', borderWidth: 2, pointRadius: 0, tension: 0.1, spanGaps: true }
+                  { label: 'f(x)', data: data.graphData.map(d => d.original), borderColor: '#0f766e', borderWidth: 2, pointRadius: 0, tension: 0.1, spanGaps: true },
+                  { label: resultLabel, data: data.graphData.map(d => d.result), borderColor: '#a15c2f', borderWidth: 2, pointRadius: 0, tension: 0.1, spanGaps: true }
                 ]
               },
               options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false } }
@@ -1036,8 +993,6 @@
             document.getElementById('differentiation-graph-container').style.display = 'block';
           }
 
-          saveHistory('differentiation', diffExpr.value, data.result);
-          loadHistory('differentiation');
         }, 100);
       });
     });
